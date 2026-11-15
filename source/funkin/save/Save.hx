@@ -145,6 +145,7 @@ class Save implements ConsoleClass
         botplay: false,
         ghostTapping: true,
         switchShowLoadingScreen: false,
+        switchTouchControls: false,
         #end
       },
       #if mobile
@@ -1302,6 +1303,8 @@ typedef SaveDataOptions =
    * Whether loading screen is shown between songs in Story Mode on Switch (default: false).
    */
   var ?switchShowLoadingScreen:Bool;
+
+  var ?switchTouchControls:Bool;
   #end
 
   var controls:

@@ -21,6 +21,55 @@ static double nx_threadCpuMs(void)
   if (R_FAILED(svcGetInfo(&ticks, InfoType_ThreadTickCount, CUR_THREAD_HANDLE, (u64)-1))) return -1.0;
   return (double)armTicksToNs(ticks) / 1000000.0;
 }
+
+struct nx_heapstat
+{
+  double total, used, freeAll, top, untouched, largestHole, allocBound, peakArena, start, end, brk;
+  int n16, n64, n128, n256, walked, truncated;
+};
+
+// Last probe result, read field by field from Haxe (main thread only).
+static struct nx_heapstat nx_hs;
+
+#if defined(__SWITCH2__)
+extern "C" {
+  extern char* fake_heap_start;
+  extern char* fake_heap_end;
+  size_t heapGetTotalSize(void);
+  size_t heapGetFreeSize(void);
+  size_t nxl_usedBytes(void) __attribute__((weak));
+}
+
+static void nx_heapProbe(struct nx_heapstat *st)
+{
+  size_t total = heapGetTotalSize();
+  size_t freeAll = heapGetFreeSize();
+  size_t used = total > freeAll ? total - freeAll : 0;
+  st->total = (double)total;
+  st->used = (double)used;
+  st->freeAll = (double)freeAll;
+  st->top = (double)freeAll;
+  st->untouched = (double)freeAll;
+  st->largestHole = (double)freeAll;
+  st->allocBound = (double)(freeAll > 0x7fffffffUL ? 0x7fffffffUL : freeAll);
+  st->peakArena = (double)total;
+  st->start = (double)(size_t)fake_heap_start;
+  st->end = (double)(size_t)fake_heap_end;
+  st->brk = (double)((size_t)fake_heap_start + used);
+  st->n16 = 0; st->n64 = 0; st->n128 = 0; st->n256 = 0; st->walked = 0; st->truncated = 0;
+}
+
+static size_t nx_largestFreeChunk(void)
+{
+  return heapGetFreeSize();
+}
+
+static int nx_capHeap(size_t capBytes)
+{
+  (void)capBytes;
+  return 1;
+}
+#else
 extern "C" {
   extern char* fake_heap_start;
   extern char* fake_heap_end;
@@ -38,15 +87,6 @@ extern "C" {
 }
 
 struct nx_mchunk { size_t prev_size; size_t size; struct nx_mchunk *fd; struct nx_mchunk *bk; };
-
-struct nx_heapstat
-{
-  double total, used, freeAll, top, untouched, largestHole, allocBound, peakArena, start, end, brk;
-  int n16, n64, n128, n256, walked, truncated;
-};
-
-// Last probe result, read field by field from Haxe (main thread only).
-static struct nx_heapstat nx_hs;
 
 // Never allocates: one pass over the free bins and the top chunk, all under the (recursive) malloc lock, so every
 // number in a [HEAP] line comes from the same heap state. The old probe (malloc/free binary search) was removed by
@@ -174,6 +214,7 @@ static int nx_capHeap(size_t capBytes)
   __malloc_unlock(_REENT);
   return 0;
 }
+#endif // defined(__SWITCH2__)
 ')
 #end
 #end

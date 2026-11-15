@@ -110,26 +110,6 @@ class NXController {
             colorSub: FlxColor.WHITE
         };
 
-        joyconLeftColor = new HidNpadControllerColor();
-        joyconRightColor = new HidNpadControllerColor();
-
-        var rc:ResultType = Hid.hidGetNpadControllerColorSplit(
-            Pad.padIsHandheld(Pointer.addressOf(pad)) ? HidNpadIdType.HidNpadIdType_Handheld : HidNpadIdType.HidNpadIdType_No1,
-            Pointer.addressOf(joyconLeftColor),
-            Pointer.addressOf(joyconRightColor)
-        );
-        
-        if (Result.R_SUCCEEDED(rc)) {
-            joyConColors[0] = {
-                colorMain: new FlxColor(joyconLeftColor.main),
-                colorSub: new FlxColor(joyconLeftColor.sub)
-            };
-            joyConColors[1] = {
-                colorMain: new FlxColor(joyconRightColor.main),
-                colorSub: new FlxColor(joyconRightColor.sub)
-            };
-        }
-
         trace("NX controller manager initialized");
         #end
     }
@@ -152,55 +132,6 @@ class NXController {
 
         stickL = Pad.padGetStickPos(Pointer.addressOf(pad), 0);
         stickR = Pad.padGetStickPos(Pointer.addressOf(pad), 1);
-
-        // Update the controller colors
-        if (joyConColors != null) {
-            var rc:ResultType = Hid.hidGetNpadControllerColorSplit(
-                Pad.padIsHandheld(Pointer.addressOf(pad)) ? HidNpadIdType.HidNpadIdType_Handheld : HidNpadIdType.HidNpadIdType_No1,
-                Pointer.addressOf(joyconLeftColor),
-                Pointer.addressOf(joyconRightColor)
-            );
-            
-            if (Result.R_SUCCEEDED(rc)) {
-                joyConColors[0] = {
-                    colorMain: FlxColor.fromRGB(
-                        (joyconLeftColor.main >> 0) & 0xFF,
-                        (joyconLeftColor.main >> 8) & 0xFF,
-                        (joyconLeftColor.main >> 16) & 0xFF,
-                        (joyconLeftColor.main >> 24) & 0xFF
-                    ),
-                    colorSub: FlxColor.fromRGB(
-                        (joyconLeftColor.sub >> 0) & 0xFF,
-                        (joyconLeftColor.sub >> 8) & 0xFF,
-                        (joyconLeftColor.sub >> 16) & 0xFF,
-                        (joyconLeftColor.sub >> 24) & 0xFF
-                    )
-                };
-                joyConColors[1] = {
-                    colorMain: FlxColor.fromRGB(
-                        (joyconRightColor.main >> 0) & 0xFF,
-                        (joyconRightColor.main >> 8) & 0xFF,
-                        (joyconRightColor.main >> 16) & 0xFF,
-                        (joyconRightColor.main >> 24) & 0xFF
-                    ),
-                    colorSub: FlxColor.fromRGB(
-                        (joyconRightColor.sub >> 0) & 0xFF,
-                        (joyconRightColor.sub >> 8) & 0xFF,
-                        (joyconRightColor.sub >> 16) & 0xFF,
-                        (joyconRightColor.sub >> 24) & 0xFF
-                    )
-                };
-            } else if (Result.R_FAILED(rc)) {
-                joyConColors[0] = {
-                    colorMain: FlxColor.WHITE,
-                    colorSub: FlxColor.WHITE,
-                };
-                joyConColors[1] = {
-                    colorMain: FlxColor.WHITE,
-                    colorSub: FlxColor.WHITE
-                };
-            }
-        }
         #end
     }
 

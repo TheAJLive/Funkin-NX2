@@ -104,6 +104,10 @@ class SwitchSettingsMenu extends Page<OptionsState.OptionsMenuPageName>
 
   function createPrefItems():Void
   {
+    createPrefItemCheckbox('Touch Controls', 'Play with four touch zones across the screen: Left, Down, Up, Right. Supports multiple fingers and hold notes in handheld mode.', function(value:Bool):Void {
+      Preferences.switchTouchControls = value;
+    }, Preferences.switchTouchControls);
+
     createPrefItemCheckbox('Antialiasing', 'When enabled, scaled and rotated sprites have smooth edges. Disabling it can improve performance slightly. Applies to what loads next.', function(value:Bool):Void {
       Preferences.switchAntialiasing = value;
     }, Preferences.switchAntialiasing);

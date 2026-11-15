@@ -502,6 +502,9 @@ class BaseCharacter extends Bopper
    */
   function justPressedNote(player:Int = 1):Bool
   {
+    #if switch
+    if (player == 1 && nx.controls.NXTouchControls.laneMask != 0) return true;
+    #end
     // Returns true if at least one of LEFT, DOWN, UP, or RIGHT is being held.
     switch (player)
     {

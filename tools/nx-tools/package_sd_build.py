@@ -23,8 +23,8 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))
 BIN = os.path.join(ROOT, 'export', 'release', 'switch', 'bin')
 DEVKITPRO = os.environ.get('DEVKITPRO', '/opt/devkitpro')
 
-TITLE = "Friday Night Funkin' (unofficial port)"
-AUTHOR = 'FunkinNX port'
+TITLE = "Friday Night Funkin' (Switch 2 port)"
+AUTHOR = "Funkin' Crew, leleletus - NX2 Port by TheAJLive"
 
 # Everything the asset-less RomFS may contain (paths relative to the RomFS root).
 ALLOWED = re.compile(r'^(manifest/[A-Za-z0-9_-]+\.json|nx/assets-manifest\.tsv|LICENSE\.md|CHANGELOG\.md|assets/fonts/Noto(Sans|Serif|Mono)-Regular\.ttf)$')
@@ -85,7 +85,7 @@ def main():
     subprocess.run([os.path.join(DEVKITPRO, 'tools', 'bin', 'nacptool'), '--create', TITLE, AUTHOR, args.version or game_version(), nacp], check=True,
                    stdout=subprocess.DEVNULL)
     icon = os.path.join(HERE, 'branding', 'icon.jpg')
-    subprocess.run([os.path.join(DEVKITPRO, 'tools', 'bin', 'elf2nro'), elf, args.out, f'--nacp={nacp}', f'--icon={icon}', f'--romfsdir={staging}'],
+    subprocess.run([os.path.join(DEVKITPRO, 'tools', 'bin', 'elf2nro'), elf, args.out, '--platform=switch2', f'--nacp={nacp}', f'--icon={icon}', f'--romfsdir={staging}'],
                    check=True, stdout=subprocess.DEVNULL)
 
     romfs_bytes = sum(os.path.getsize(os.path.join(d, f)) for d, _, fs in os.walk(staging) for f in fs)

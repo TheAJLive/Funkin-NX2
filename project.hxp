@@ -638,7 +638,7 @@ class Project extends HXProject
 
     this.meta.version = VERSION;
     this.meta.packageName = PACKAGE_NAME;
-    this.meta.company = COMPANY;
+    this.meta.company = isSwitch() ? "Funkin' Crew, leleletus - NX2 Port by TheAJLive" : COMPANY;
 
     this.app.main = MAIN_CLASS;
     this.app.file = EXECUTABLE_NAME;

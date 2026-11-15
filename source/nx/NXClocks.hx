@@ -41,8 +41,23 @@ static int nxc_mhz(int which)
 
 static int nxc_setConfig(int docked, u32 config)
 {
+#if defined(__SWITCH2__)
+  (void)docked;
+  (void)config;
+  return 0;
+#else
   if (!nxc_apmOpen) return -1;
   return (int)apmSetPerformanceConfiguration(docked ? ApmPerformanceMode_Boost : ApmPerformanceMode_Normal, config);
+#endif
+}
+
+static void nxc_setLoadBoost(bool on)
+{
+#if defined(__SWITCH2__)
+  (void)on;
+#else
+  appletSetCpuBoostMode(on ? ApmCpuBoostMode_FastLoad : ApmCpuBoostMode_Normal);
+#endif
 }
 
 static u32 nxc_currentConfig(void)
@@ -111,7 +126,7 @@ class NXClocks
     if (on == loadBoostOn) return;
     loadBoostOn = on;
     if (!on) loadBoostUntil = -1.0;
-    untyped __cpp__('appletSetCpuBoostMode({0} ? ApmCpuBoostMode_FastLoad : ApmCpuBoostMode_Normal)', on);
+    untyped __cpp__('nxc_setLoadBoost({0})', on);
     #end
   }
 

@@ -942,6 +942,10 @@ class PlayState extends MusicBeatSubState
     initStrumlines();
     initPopups();
 
+    #if switch
+    add(new nx.controls.NXTouchControls());
+    #end
+
     #if mobile
     if (!ControlsHandler.hasExternalInputDevice)
     {
@@ -3318,6 +3322,15 @@ class PlayState extends MusicBeatSubState
      */
   function onKeyRelease(event:PreciseInputEvent):Void
   {
+    #if switch
+    if (nx.controls.NXTouchControls.isTouchKey(event.keyCode) && !nx.controls.NXTouchControls.enabled())
+    {
+      inputPressQueue = inputPressQueue.filter(input -> input.keyCode != event.keyCode);
+      inputReleaseQueue = inputReleaseQueue.filter(input -> input.keyCode != event.keyCode);
+      playerStrumline?.releaseKey(event.noteDirection, event.keyCode);
+      return;
+    }
+    #end
     // Do the minimal possible work here.
     inputReleaseQueue.push(event);
   }

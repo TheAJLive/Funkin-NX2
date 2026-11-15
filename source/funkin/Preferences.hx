@@ -879,6 +879,23 @@ class Preferences
     return value;
   }
 
+  public static var switchTouchControls(get, set):Bool;
+
+  static function get_switchTouchControls():Bool
+  {
+    return Save?.instance?.options?.switchTouchControls ?? false;
+  }
+
+  static function set_switchTouchControls(value:Bool):Bool
+  {
+    if (Save.instance != null && Save.instance.options != null)
+    {
+      Save.instance.options.switchTouchControls = value;
+      if (Save.system != null) Save.system.flush();
+    }
+    return value;
+  }
+
   /**
    * Whether the loading screen is shown between songs in Story Mode on Switch.
    * When false (default), transitions between songs are native and direct 1:1 like PC.

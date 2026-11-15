@@ -14,6 +14,7 @@ package nx.video;
 @:cppFileCode('
 #include <switch.h>
 #include <EGL/egl.h>
+#include <GLES2/gl2.h>
 extern "C"
 {
 #include <libavformat/avformat.h>
@@ -250,6 +251,7 @@ static int nxv_open(const char *path, int simd)
     if (nxv.slots[i].y == NULL || nxv.slots[i].uv == NULL) return -1003;
   }
   nxv.texSubImage2D = (NxvTexSubImage2D)eglGetProcAddress("glTexSubImage2D");
+  if (nxv.texSubImage2D == NULL) nxv.texSubImage2D = (NxvTexSubImage2D)glTexSubImage2D;
   if (nxv.texSubImage2D == NULL) return -1004;
   // Core 2 (the main thread is on core 0, the audio thread on core 1), same priority as the main thread.
   Result rc = threadCreate(&nxv.thread, nxv_threadMain, NULL, NULL, 0x100000, 0x2C, 2);

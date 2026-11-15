@@ -29,6 +29,7 @@ class NXPreciseInputHandler
    */
   public function update():Void
   {
+    NXTouchControls.poll(onButtonPressed, onButtonReleased);
     var controller = NXMain.nxController;
     if (controller == null) return;
 
@@ -80,6 +81,7 @@ class NXPreciseInputHandler
 
   public function destroy():Void
   {
+    NXTouchControls.releaseTouches(onButtonReleased);
     onButtonPressed = null;
     onButtonReleased = null;
   }

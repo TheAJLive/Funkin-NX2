@@ -325,6 +325,7 @@ class DropShadowShader extends FlxShader
     return val;
   }
 
+  @:glFragmentExtensions([{name: "GL_OES_standard_derivatives", behavior: "enable"}])
   @:glFragmentSource('
       #pragma header
 

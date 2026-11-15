@@ -28,15 +28,15 @@ export PATH="$DEVKITPRO/devkitA64/bin:$PATH"
 
 CONFIGURE_FLAGS=(
   --prefix="$WORK" --build-suffix=_nx
-  --enable-cross-compile --cross-prefix=aarch64-none-elf- --arch=aarch64 --cpu=cortex-a57 --target-os=horizon
+  --enable-cross-compile --cross-prefix=aarch64-none-elf- --arch=aarch64 --cpu=cortex-a78c --target-os=horizon
   --enable-static --disable-shared --enable-pic --enable-asm --enable-neon --disable-runtime-cpudetect
   --disable-everything --disable-autodetect --disable-programs --disable-doc --disable-debug
   --disable-avdevice --disable-avfilter --disable-swresample --disable-postproc --disable-network
   --disable-zlib --disable-bzlib --disable-iconv --disable-lzma
   --enable-pthreads --enable-swscale
   --enable-decoder=h264,hevc,vp9,aac,vorbis --enable-parser=h264,hevc,vp9 --enable-demuxer=mov,matroska --enable-protocol=file
-  --extra-cflags="-D__SWITCH__ -D_GNU_SOURCE -march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIC -ftls-model=local-exec -ffunction-sections -fdata-sections -I$DEVKITPRO/libnx/include"
-  --extra-ldflags="-fPIE -L$DEVKITPRO/libnx/lib"
+  --extra-cflags="-D__SWITCH__ -D__SWITCH2__ -D_GNU_SOURCE -mcpu=cortex-a78c+crypto -mtp=soft -fPIC -ftls-model=local-exec -ffunction-sections -fdata-sections -I$DEVKITPRO/libounce/include"
+  --extra-ldflags="-fPIE -L$DEVKITPRO/libounce/lib"
 )
 
 want="$VERSION $SHA256 $(sha256sum "$PATCH" "$TX_PATCH" "$0" | cut -c1-16 | tr '\n' ' ')"
@@ -59,7 +59,7 @@ patch -d "$SRC" -Np1 -s -i "$TX_PATCH"
 
 cd "$SRC"
 ./configure "${CONFIGURE_FLAGS[@]}" > "$WORK/configure.log" 2>&1 || { tail -n 30 "$WORK/configure.log"; tail -n 40 ffbuild/config.log; exit 1; }
-make -j"$(nproc)" > "$WORK/make.log" 2>&1 || { tail -n 40 "$WORK/make.log"; exit 1; }
+nice -n 19 make -j4 > "$WORK/make.log" 2>&1 || { tail -n 40 "$WORK/make.log"; exit 1; }
 make install > /dev/null
 
 for lib in avcodec avformat avutil swscale; do

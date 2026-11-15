@@ -31,6 +31,14 @@ package nx;
 #include <stddef.h>
 #include <errno.h>
 
+#if defined(__SWITCH2__)
+extern "C" {
+struct nxl_stats { double regionBytes, used, freeBytes, largestFree, peak, maxRequest, room; int blocks, spans, fallbacks, rescues; };
+static struct nxl_stats nxl_st;
+size_t nxl_usedBytes(void) { return 0; }
+void nxl_readStats(int resetPeak) { (void)resetPeak; memset(&nxl_st, 0, sizeof(nxl_st)); }
+}
+#else
 extern "C" {
   extern char* fake_heap_start;
   extern char* fake_heap_end;
@@ -434,6 +442,7 @@ void nxl_readStats(int resetPeak)
 }
 
 } // extern "C"
+#endif // !defined(__SWITCH2__)
 ')
 #end
 class NXLargeHeap
